@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.document_loaders import WebBaseLoader
-from langchain.vectorstores import Chroma
+#from langchain.vectorstores import Chroma
 
 class WebScrapper:
 
@@ -23,22 +23,22 @@ class WebScrapper:
         self.persist_directory = 'chroma_db',
         self.collection_name = "utd_engineering"
 
-    def store_embeddings(self, texts):
-        try:
-            vectorDb = Chroma(
-                collection_name=self.collection_name,
-                persist_directory=self.persist_directory
-            )
+    # def store_embeddings(self, texts):
+    #     try:
+    #         vectorDb = Chroma(
+    #             collection_name=self.collection_name,
+    #             persist_directory=self.persist_directory
+    #         )
 
-            vectorDb.add_documents(
-                documents=texts,
-                ids = [text.metadata['source']+text.metadata['start_index'] for text in texts]
-            )
-            vectorDb.persist()
-            return True
-        except Exception as e:
-            print(f"Failed to store embedding : {str(e)}")
-            return False
+    #         vectorDb.add_documents(
+    #             documents=texts,
+    #             ids = [text.metadata['source']+text.metadata['start_index'] for text in texts]
+    #         )
+    #         vectorDb.persist()
+    #         return True
+    #     except Exception as e:
+    #         print(f"Failed to store embedding : {str(e)}")
+    #         return False
 
 
     def clean_text(self , text:str)->str:
@@ -61,19 +61,20 @@ class WebScrapper:
         
         texts = self.text_splitter.split_documents(documents)
         print(texts)
-        storage_sucess = self.store_embeddings(texts=texts)
-        #embeddings = self.create_embeddings(texts)
+        #storage_sucess = self.store_embeddings(texts=texts)
+        embeddings = self.create_embeddings(texts)
         #print(embeddings)
 
         return {
             'url' : url,
             "total_chunks":len(texts),
-            "storage_success":storage_sucess,
+            #"storage_success":storage_sucess,
             "chunks":[
                 {
                     'content':text.page_content,
                     'metadata':text.metadata,
-                }for text in texts
+                    'embedding':embedding
+                }for text , embedding in zip(texts , embeddings)
             ]
         }
         
@@ -83,3 +84,5 @@ class WebScrapper:
         except Exception as e:
             print(f"Call failed for the URL : {url}")
         return loader.load()
+
+#Object of Docuemnt - > PageContent , Metadata

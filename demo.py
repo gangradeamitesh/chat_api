@@ -1,62 +1,33 @@
-from langchain_community.document_loaders import WebBaseLoader, UnstructuredHTMLLoader
-# loader = WebBaseLoader(["https://engineering.utdallas.edu" , "https://engineering.utdallas.edu/about/leadership/"])
-#loader.requests_per_second = 1
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import itertools
+VOC_CLASS_NAMES = [
+    "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
+    "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
+    "pottedplant", "sheep", "sofa", "train", "tvmonitor"
+]
 
-urls = ["https://engineering.utdallas.edu"]
+T2_CLASS_NAMES = [
+    "truck", "traffic light", "fire hydrant", "stop sign", "parking meter",
+    "bench", "elephant", "bear", "zebra", "giraffe",
+    "backpack", "umbrella", "handbag", "tie", "suitcase",
+    "microwave", "oven", "toaster", "sink", "refrigerator"
+]
 
-text_splitter = RecursiveCharacterTextSplitter(
-    # Set a really small chunk size, just to show.
-    chunk_size=100,
-    chunk_overlap=20,
-    length_function=len,
-    is_separator_regex=False,
-)
-loader = WebBaseLoader(urls)
-docs = loader.load()
-print(docs)
-text = text_splitter.create_documents(docs.page_content)
-print("Printing Text : " , text)
-print("Printing......")
-print(docs)
-print(len(docs))
+T3_CLASS_NAMES = [
+    "frisbee", "skis", "snowboard", "sports ball", "kite",
+    "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket",
+    "banana", "apple", "sandwich", "orange", "broccoli",
+    "carrot", "hot dog", "pizza", "donut", "cake"
+]
 
-# from langchain_text_splitters import RecursiveCharacterTextSplitter
+T4_CLASS_NAMES = [
+    "bed", "toilet", "laptop", "mouse",
+    "remote", "keyboard", "cell phone", "book", "clock",
+    "vase", "scissors", "teddy bear", "hair drier", "toothbrush",
+    "wine glass", "cup", "fork", "knife", "spoon", "bowl"
+]
 
-# from langchain.chains import create_extraction_chain
-# from langchain_community.document_loaders import AsyncHtmlLoader , AsyncChromiumLoader
+UNK_CLASS = ["unknown"]
 
+VOC_COCO_CLASS_NAMES = tuple(itertools.chain(VOC_CLASS_NAMES, T2_CLASS_NAMES, T3_CLASS_NAMES, T4_CLASS_NAMES, UNK_CLASS))
 
-# schema = {
-#     "properties": {
-#         "news_article_title": {"type": "string"},
-#         "news_article_summary": {"type": "string"},
-#     },
-#     "required": ["news_article_title", "news_article_summary"],
-# }
-# from langchain_community.document_transformers import BeautifulSoupTransformer
-
-
-# def extract(content: str, schema: dict):
-#     return create_extraction_chain(schema=schema, llm=llm).run(content)
-# def scrape_with_playwright(urls, schema):
-#     loader = AsyncChromiumLoader(urls)
-#     docs = loader.load()
-#     bs_transformer = BeautifulSoupTransformer()
-#     docs_transformed = bs_transformer.transform_documents(
-#         docs, tags_to_extract=["span"]
-#     )
-#     print("Extracting content with LLM")
-
-#     # Grab the first 1000 tokens of the site
-#     splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-#         chunk_size=1000, chunk_overlap=0
-#     )
-#     splits = splitter.split_documents(docs_transformed)
-
-#     # Process the first split
-#     extracted_content = extract(schema=schema, content=splits[0].page_content)
-#     pprint.pprint(extracted_content)
-#     return extracted_content
-
-
+print(VOC_COCO_CLASS_NAMES)
